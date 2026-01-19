@@ -1,0 +1,22 @@
+# http://editorconfig.org
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+# Sincronizado com o Biome (lineWidth: 80)
+# Alguns editores mostram uma linha guia com essa config
+max_line_length = 80
+
+[*.md]
+# Markdown pode precisar de espaços no final para quebra de linha manual
+trim_trailing_whitespace = false
+max_line_length = off
+
+[Makefile]
+# Makefiles obrigatoriamente usam tabs
+indent_style = tab
