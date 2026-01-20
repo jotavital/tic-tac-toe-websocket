@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Square } from "@/components/game/Square";
+import { Square } from "@/components/game/ui/Square";
 import type { VictoryCombination } from "@/types/Game";
 import { GameSymbolsEnum } from "@/types/Player";
 
