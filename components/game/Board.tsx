@@ -1,12 +1,29 @@
 import { Square } from "@/components/game/Square";
+import type { VictoryCombination } from "@/types/Game";
+import { GameSymbolsEnum } from "@/types/Player";
 
 interface BoardProps {
   squares: (string | null)[];
   onPlay: (index: number) => void;
   disabled?: boolean;
+  victoryCombination?: VictoryCombination | null;
 }
 
-export function Board({ squares, onPlay, disabled }: BoardProps) {
+export function Board({
+  squares,
+  onPlay,
+  disabled,
+  victoryCombination,
+}: BoardProps) {
+  const winningSvgLineCoords = victoryCombination?.svgLineCoords;
+
+  const winnerSymbol = victoryCombination
+    ? squares[victoryCombination.indices[0]]
+    : null;
+
+  const lineColor =
+    winnerSymbol === GameSymbolsEnum.X ? "text-rose-500" : "text-cyan-500";
+
   return (
     <div className="relative h-72 w-72 sm:h-96 sm:w-96">
       <svg
@@ -24,6 +41,24 @@ export function Board({ squares, onPlay, disabled }: BoardProps) {
           <line x1="10" y1="200" x2="290" y2="200" />
         </g>
       </svg>
+
+      {winningSvgLineCoords && (
+        <svg
+          className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+          viewBox="0 0 300 300"
+        >
+          <line
+            x1={winningSvgLineCoords.x1}
+            y1={winningSvgLineCoords.y1}
+            x2={winningSvgLineCoords.x2}
+            y2={winningSvgLineCoords.y2}
+            className={lineColor}
+            stroke="currentColor"
+            strokeWidth="8"
+            strokeLinecap="round"
+          />
+        </svg>
+      )}
 
       <div className="relative z-10 grid h-full w-full grid-cols-3 grid-rows-3">
         {squares?.map((square, i) => (

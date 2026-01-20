@@ -1,3 +1,4 @@
+import { GameSymbolsEnum } from "@/types/Player";
 import { OIcon, XIcon } from "./Icons";
 
 interface SquareProps {
@@ -14,8 +15,8 @@ export function Square({ value, onClick, disabled }: SquareProps) {
       onClick={onClick}
       disabled={disabled || value !== null}
     >
-      {value === "X" && <XIcon />}
-      {value === "O" && <OIcon />}
+      {value === GameSymbolsEnum.X && <XIcon />}
+      {value === GameSymbolsEnum.O && <OIcon />}
     </button>
   );
 }
