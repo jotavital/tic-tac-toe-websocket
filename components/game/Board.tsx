@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { Square } from "@/components/game/Square";
 import type { VictoryCombination } from "@/types/Game";
 import { GameSymbolsEnum } from "@/types/Player";
@@ -47,7 +48,7 @@ export function Board({
           className="pointer-events-none absolute inset-0 z-20 h-full w-full"
           viewBox="0 0 300 300"
         >
-          <line
+          <motion.line
             x1={winningSvgLineCoords.x1}
             y1={winningSvgLineCoords.y1}
             x2={winningSvgLineCoords.x2}
@@ -56,6 +57,9 @@ export function Board({
             stroke="currentColor"
             strokeWidth="8"
             strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
           />
         </svg>
       )}

@@ -1,3 +1,4 @@
+import { motion, type Variants } from "motion/react";
 import { GameSymbolsEnum } from "@/types/Player";
 import { OIcon, XIcon } from "./Icons";
 
@@ -7,6 +8,19 @@ interface SquareProps {
   disabled?: boolean;
 }
 
+const iconVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.5 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+};
+
 export function Square({ value, onClick, disabled }: SquareProps) {
   return (
     <button
@@ -15,8 +29,16 @@ export function Square({ value, onClick, disabled }: SquareProps) {
       onClick={onClick}
       disabled={disabled || value !== null}
     >
-      {value === GameSymbolsEnum.X && <XIcon />}
-      {value === GameSymbolsEnum.O && <OIcon />}
+      {value && (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={iconVariants}
+          className="flex items-center justify-center"
+        >
+          {value === GameSymbolsEnum.X ? <XIcon /> : <OIcon />}
+        </motion.div>
+      )}
     </button>
   );
 }
