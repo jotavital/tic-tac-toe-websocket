@@ -1,7 +1,9 @@
 "use client";
 
 import { type HTMLMotionProps, motion } from "motion/react";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
+import { useGameSounds } from "@/hooks/useGameSounds";
+import type { ButtonSoundType } from "@/types/Game";
 import { cn } from "@/utils/cn";
 
 interface ButtonProps extends HTMLMotionProps<"button"> {
@@ -9,6 +11,7 @@ interface ButtonProps extends HTMLMotionProps<"button"> {
   variant?: "primary" | "secondary";
   size?: "sm" | "md" | "lg";
   icon?: ReactNode;
+  sound?: ButtonSoundType;
 }
 
 export function Button({
@@ -17,8 +20,16 @@ export function Button({
   size = "md",
   icon,
   className,
+  onClick,
+  sound = "tap",
   ...props
 }: ButtonProps) {
+  const { playTapSound } = useGameSounds();
+
+  const soundMap: Partial<Record<ButtonSoundType, (() => void) | undefined>> = {
+    tap: playTapSound,
+  };
+
   const variants = {
     primary: cn(
       "bg-amber-400 border-amber-600 text-slate-900",
@@ -40,9 +51,20 @@ export function Button({
     lg: "px-8 py-4 text-2xl border-b-[4px] active:mt-[4px]",
   };
 
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    const playButtonSound = soundMap[sound];
+
+    if (playButtonSound) {
+      playButtonSound();
+    }
+
+    onClick?.(e);
+  };
+
   return (
     <motion.button
       type="button"
+      onClick={handleClick}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95, y: size === "lg" ? 4 : size === "md" ? 3 : 2 }}
       className={cn(

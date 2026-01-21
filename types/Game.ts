@@ -9,3 +9,5 @@ export const GAME_SCREENS = {
 } as const;
 
 export type GameScreen = (typeof GAME_SCREENS)[keyof typeof GAME_SCREENS];
+
+export type ButtonSoundType = "tap" | "other_sounds_here_later";

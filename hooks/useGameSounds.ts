@@ -1,4 +1,3 @@
-// hooks/useGameSounds.ts
 "use client";
 
 import { Howl } from "howler";
@@ -20,6 +19,11 @@ const sounds = {
     preload: true,
     volume: 0.5,
   }),
+  tap: new Howl({
+    src: ["/sounds/tap.wav"],
+    preload: true,
+    volume: 0.5,
+  }),
 };
 
 export function useGameSounds() {
@@ -27,5 +31,6 @@ export function useGameSounds() {
     playMoveSound: useCallback(() => sounds.move.play(), []),
     playWinSound: useCallback(() => sounds.win.play(), []),
     playDrawSound: useCallback(() => sounds.draw.play(), []),
+    playTapSound: useCallback(() => sounds.tap.play(), []),
   };
 }
