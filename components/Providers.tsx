@@ -2,9 +2,12 @@
 
 import type { ReactNode } from "react";
 import { GameScreensNavigationProvider } from "@/contexts/NavigationContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <GameScreensNavigationProvider>{children}</GameScreensNavigationProvider>
+    <ThemeProvider>
+      <GameScreensNavigationProvider>{children}</GameScreensNavigationProvider>
+    </ThemeProvider>
   );
 }

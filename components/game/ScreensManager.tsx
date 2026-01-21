@@ -7,7 +7,7 @@ export function ScreensManager() {
   const { currentGameScreen } = useGameScreensNavigation();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex min-h-screen flex-col items-center justify-center">
       {currentGameScreen === GAME_SCREENS.MAIN_MENU && <MainMenu />}
       {currentGameScreen === GAME_SCREENS.GAME && <Game />}
     </div>

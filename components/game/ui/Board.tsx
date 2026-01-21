@@ -23,12 +23,12 @@ export function Board({
     : null;
 
   const lineColor =
-    winnerSymbol === GameSymbolsEnum.X ? "text-rose-500" : "text-cyan-500";
+    winnerSymbol === GameSymbolsEnum.X ? "text-game-x" : "text-game-o";
 
   return (
     <div className="relative h-72 w-72 sm:h-96 sm:w-96">
       <svg
-        className="pointer-events-none absolute inset-0 h-full w-full text-slate-300"
+        className="pointer-events-none absolute inset-0 h-full w-full"
         viewBox="0 0 300 300"
         aria-hidden="true"
       >

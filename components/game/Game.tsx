@@ -46,7 +46,7 @@ export function Game() {
       <button
         type="button"
         onClick={() => navigateToScreen(GAME_SCREENS.MAIN_MENU)}
-        className="cursor-pointer flex items-center gap-2 rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+        className="cursor-pointer flex items-center gap-2 rounded-lg p-2 transition-colors hover:bg-slate-800"
       >
         <svg
           className="h-6 w-6"

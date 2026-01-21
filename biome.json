@@ -30,6 +30,9 @@
       },
       "suspicious": {
         "noArrayIndexKey": "warn"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
       }
     }
   },

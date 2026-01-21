@@ -1,14 +1,16 @@
 "use client";
 
 import { ScreensManager } from "@/components/game/ScreensManager";
-import { Providers } from "@/components/Providers";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function Home() {
   return (
-    <Providers>
-      <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-        <ScreensManager />
+    <div className="flex min-h-screen flex-col items-center justify-center font-sans ">
+      <div className="absolute top-5 right-5">
+        <ThemeToggle />
       </div>
-    </Providers>
+
+      <ScreensManager />
+    </div>
   );
 }
