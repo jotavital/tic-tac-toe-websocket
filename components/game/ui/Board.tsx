@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 import { Square } from "@/components/game/ui/Square";
 import type { VictoryCombination } from "@/types/Game";
 import { GameSymbolsEnum } from "@/types/Player";
@@ -9,6 +9,31 @@ interface BoardProps {
   disabled?: boolean;
   victoryCombination?: VictoryCombination | null;
 }
+
+const boardContainerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const lineVariants: Variants = {
+  hidden: {
+    pathLength: 0,
+    opacity: 0,
+  },
+  visible: {
+    pathLength: 1,
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      ease: "easeInOut",
+    },
+  },
+};
 
 export function Board({
   squares,
@@ -22,25 +47,54 @@ export function Board({
     ? squares[victoryCombination.indices[0]]
     : null;
 
-  const lineColor =
+  const winningLineColor =
     winnerSymbol === GameSymbolsEnum.X ? "text-game-x" : "text-game-o";
 
   return (
     <div className="relative h-72 w-72 sm:h-96 sm:w-96">
       <svg
-        className="pointer-events-none absolute inset-0 h-full w-full"
+        className="pointer-events-none absolute inset-0 h-full w-full text-slate-300 transition-colors dark:text-slate-700"
         viewBox="0 0 300 300"
         aria-hidden="true"
       >
-        <g stroke="currentColor" strokeWidth="10" strokeLinecap="round">
-          {/* vertical lines */}
-          <line x1="100" y1="10" x2="100" y2="290" />
-          <line x1="200" y1="10" x2="200" y2="290" />
+        <motion.g
+          variants={boardContainerVariants}
+          initial="hidden"
+          animate="visible"
+          stroke="currentColor"
+          strokeWidth="10"
+          strokeLinecap="round"
+        >
+          <motion.line
+            variants={lineVariants}
+            x1="100"
+            y1="10"
+            x2="100"
+            y2="290"
+          />
+          <motion.line
+            variants={lineVariants}
+            x1="200"
+            y1="10"
+            x2="200"
+            y2="290"
+          />
 
-          {/* horizontal lines */}
-          <line x1="10" y1="100" x2="290" y2="100" />
-          <line x1="10" y1="200" x2="290" y2="200" />
-        </g>
+          <motion.line
+            variants={lineVariants}
+            x1="10"
+            y1="100"
+            x2="290"
+            y2="100"
+          />
+          <motion.line
+            variants={lineVariants}
+            x1="10"
+            y1="200"
+            x2="290"
+            y2="200"
+          />
+        </motion.g>
       </svg>
 
       {winningSvgLineCoords && (
@@ -53,7 +107,7 @@ export function Board({
             y1={winningSvgLineCoords.y1}
             x2={winningSvgLineCoords.x2}
             y2={winningSvgLineCoords.y2}
-            className={lineColor}
+            className={winningLineColor}
             stroke="currentColor"
             strokeWidth="8"
             strokeLinecap="round"
