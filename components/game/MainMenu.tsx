@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { Button } from "@/components/game/ui/Button";
 import { useGameScreensNavigation } from "@/contexts/NavigationContext";
 import { GAME_SCREENS } from "@/types/Game";
 
@@ -83,33 +84,20 @@ export function MainMenu() {
         </motion.p>
       </motion.div>
 
-      <motion.button
-        type="button"
+      <Button
+        size="lg"
+        onClick={() => navigateToScreen(GAME_SCREENS.GAME)}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, type: "spring" }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95, y: 4 }}
-        onClick={() => navigateToScreen(GAME_SCREENS.GAME)}
-        className="
-        group relative overflow-hidden rounded-xl px-8 py-4 text-2xl font-black uppercase tracking-wider shadow-lg cursor-pointer
-        bg-amber-400 border-b-4 border-amber-600
-        hover:bg-amber-300 hover:border-amber-500
-        active:border-b-0 active:mt-1 active:shadow-none
-        dark:bg-amber-500 dark:border-amber-700
-        dark:hover:bg-amber-400 dark:hover:border-amber-600
-        transition-colors
-      "
-      >
-        <span className="relative z-10 flex items-center gap-2 drop-shadow-[1px_2px_0_rgba(0,0,0,0.15)] tracking-[0.10em]">
+        transition={{ delay: 0.8, type: "spring", stiffness: 300, damping: 20 }}
+        icon={
           <svg className="h-6 w-6 fill-current" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z" />
           </svg>
-          Jogar Agora
-        </span>
-
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:animate-shimmer group-hover:opacity-100" />
-      </motion.button>
+        }
+      >
+        Jogar Agora
+      </Button>
     </div>
   );
 }

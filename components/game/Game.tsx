@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { Board } from "@/components/game/ui/Board";
+import { Button } from "@/components/game/ui/Button";
 import { useGameScreensNavigation } from "@/contexts/NavigationContext";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { GAME_SCREENS } from "@/types/Game";
@@ -42,38 +43,41 @@ export function Game() {
   }, [winner, isDraw, playDrawSound, playWinSound]);
 
   return (
-    <main className="flex min-h-screen w-3xl flex-col items-center justify-center ">
-      <button
-        type="button"
-        onClick={() => navigateToScreen(GAME_SCREENS.MAIN_MENU)}
-        className="cursor-pointer flex items-center gap-2 rounded-lg p-2 transition-colors hover:bg-slate-800"
-      >
-        <svg
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
-        <span className="text-sm font-medium">Voltar ao menu</span>
-      </button>
-
+    <main className="flex min-h-screen w-3xl flex-col justify-center ">
       {winner && (
         <ReactConfetti recycle={false} numberOfPieces={800} gravity={0.2} />
       )}
 
-      <Board
-        squares={squares}
-        onPlay={handlePlay}
-        disabled={false}
-        victoryCombination={victoryCombination}
-      />
+      <div className="flex flex-col items-center gap-10 w-full">
+        <Board
+          squares={squares}
+          onPlay={handlePlay}
+          disabled={false}
+          victoryCombination={victoryCombination}
+        />
+
+        <Button
+          variant="secondary"
+          onClick={() => navigateToScreen(GAME_SCREENS.MAIN_MENU)}
+          icon={
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          }
+        >
+          Voltar ao menu
+        </Button>
+      </div>
     </main>
   );
 }
