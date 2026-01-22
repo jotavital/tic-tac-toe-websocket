@@ -1,46 +1,20 @@
-import { motion, type Variants } from "motion/react";
+import { motion } from "motion/react";
 import { GameResultOverlay } from "@/components/game/ui/GameResultOverlay";
 import { Square } from "@/components/game/ui/Square";
+import { WinningLine } from "@/components/game/ui/WinningLine";
+import {
+  BOARD_MOTION_VARIANTS,
+  LINE_MOTION_VARIANTS,
+} from "@/constants/motion-variants";
 import { useGame } from "@/contexts/GameContext";
 import { GameSymbolsEnum } from "@/types/Player";
 
-const boardContainerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const lineVariants: Variants = {
-  hidden: {
-    pathLength: 0,
-    opacity: 0,
-  },
-  visible: {
-    pathLength: 1,
-    opacity: 1,
-    transition: {
-      duration: 0.4,
-      ease: "easeInOut",
-    },
-  },
-};
-
 export function Board() {
-  const { squares, isGameOver, victoryCombination, handlePlay } =
+  const { squares, isGameOver, victoryCombination, handlePlay, winner } =
     useGame();
 
-  const winningSvgLineCoords = victoryCombination?.svgLineCoords;
-
-  const winnerSymbol = victoryCombination
-    ? squares[victoryCombination.indices[0]]
-    : null;
-
-  const winningLineColor =
-    winnerSymbol === GameSymbolsEnum.X ? "text-game-x" : "text-game-o";
+  const winningLineColorClass =
+    winner === GameSymbolsEnum.X ? "text-game-x" : "text-game-o";
 
   return (
     <div className="relative h-72 w-72 sm:h-96 sm:w-96">
@@ -52,7 +26,7 @@ export function Board() {
         aria-hidden="true"
       >
         <motion.g
-          variants={boardContainerVariants}
+          variants={BOARD_MOTION_VARIANTS}
           initial="hidden"
           animate="visible"
           stroke="currentColor"
@@ -60,14 +34,14 @@ export function Board() {
           strokeLinecap="round"
         >
           <motion.line
-            variants={lineVariants}
+            variants={LINE_MOTION_VARIANTS}
             x1="100"
             y1="10"
             x2="100"
             y2="290"
           />
           <motion.line
-            variants={lineVariants}
+            variants={LINE_MOTION_VARIANTS}
             x1="200"
             y1="10"
             x2="200"
@@ -75,14 +49,14 @@ export function Board() {
           />
 
           <motion.line
-            variants={lineVariants}
+            variants={LINE_MOTION_VARIANTS}
             x1="10"
             y1="100"
             x2="290"
             y2="100"
           />
           <motion.line
-            variants={lineVariants}
+            variants={LINE_MOTION_VARIANTS}
             x1="10"
             y1="200"
             x2="290"
@@ -91,36 +65,24 @@ export function Board() {
         </motion.g>
       </svg>
 
-      {winningSvgLineCoords && (
-        <svg
-          className="pointer-events-none absolute inset-0 h-full w-full"
-          viewBox="0 0 300 300"
-        >
-          <motion.line
-            x1={winningSvgLineCoords.x1}
-            y1={winningSvgLineCoords.y1}
-            x2={winningSvgLineCoords.x2}
-            y2={winningSvgLineCoords.y2}
-            className={winningLineColor}
-            stroke="currentColor"
-            strokeWidth="8"
-            strokeLinecap="round"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          />
-        </svg>
+      {victoryCombination?.svgLineCoords && (
+        <WinningLine
+          x1={victoryCombination?.svgLineCoords.x1}
+          y1={victoryCombination?.svgLineCoords.y1}
+          x2={victoryCombination?.svgLineCoords.x2}
+          y2={victoryCombination?.svgLineCoords.y2}
+          colorClass={winningLineColorClass}
+        />
       )}
 
       <div className="relative z-10 grid h-full w-full grid-cols-3 grid-rows-3">
         {squares?.map((square, i) => (
-          <div key={i} className="flex items-center justify-center p-2">
-            <Square
-              value={square}
-              onClick={() => handlePlay(i)}
-              disabled={isGameOver}
-            />
-          </div>
+          <Square
+            key={i}
+            value={square}
+            onClick={() => handlePlay(i)}
+            disabled={isGameOver}
+          />
         ))}
       </div>
     </div>

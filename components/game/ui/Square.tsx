@@ -1,5 +1,6 @@
 import { motion, type Variants } from "motion/react";
-import { OIcon, XIcon } from "@/components/game/ui/GameSymbols";
+import { OIcon } from "@/components/ui/icons/OIcon";
+import { XIcon } from "@/components/ui/icons/XIcon";
 import { GameSymbolsEnum } from "@/types/Player";
 
 interface SquareProps {
@@ -23,22 +24,24 @@ const iconVariants: Variants = {
 
 export function Square({ value, onClick, disabled }: SquareProps) {
   return (
-    <button
-      type="button"
-      className="flex h-full w-full items-center justify-center rounded-xl transition-colors hover:bg-slate-500/10 focus:outline-none focus:ring-4 focus:ring-slate-400/20 disabled:cursor-default disabled:hover:bg-transparent cursor-pointer"
-      onClick={onClick}
-      disabled={disabled || value !== null}
-    >
-      {value && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={iconVariants}
-          className="flex items-center justify-center"
-        >
-          {value === GameSymbolsEnum.X ? <XIcon /> : <OIcon />}
-        </motion.div>
-      )}
-    </button>
+    <div className="flex items-center justify-center p-2">
+      <button
+        type="button"
+        className="flex h-full w-full items-center justify-center rounded-xl transition-colors hover:bg-slate-500/10 focus:outline-none focus:ring-4 focus:ring-slate-400/20 disabled:cursor-default disabled:hover:bg-transparent cursor-pointer"
+        onClick={onClick}
+        disabled={disabled || value !== null}
+      >
+        {value && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={iconVariants}
+            className="flex items-center justify-center"
+          >
+            {value === GameSymbolsEnum.X ? <XIcon /> : <OIcon />}
+          </motion.div>
+        )}
+      </button>
+    </div>
   );
 }

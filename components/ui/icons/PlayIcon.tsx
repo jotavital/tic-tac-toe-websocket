@@ -1,0 +1,12 @@
+import type { ComponentProps } from "react";
+import { cn } from "@/utils/cn";
+
+interface IconProps extends ComponentProps<"svg"> {}
+
+export function PlayIcon({ className, ...props }: IconProps) {
+  return (
+    <svg className={cn(className)} {...props}>
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  );
+}

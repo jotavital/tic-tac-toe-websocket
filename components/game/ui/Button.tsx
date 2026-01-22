@@ -78,10 +78,9 @@ export function Button({
     >
       {icon && (
         <span
-          className={cn(
-            "flex items-center justify-center transition-transform duration-300",
-            variant === "secondary" && "group-hover:-translate-x-1",
-          )}
+          className={
+            "flex items-center justify-center transition-transform duration-300 group-hover:-translate-x-1"
+          }
         >
           {icon}
         </span>
@@ -98,7 +97,7 @@ export function Button({
       </span>
 
       {variant === "primary" && (
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:animate-shimmer group-hover:opacity-100" />
+        <div className="absolute inset-0 z-0 bg-linear-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:animate-shimmer group-hover:opacity-100" />
       )}
     </motion.button>
   );
