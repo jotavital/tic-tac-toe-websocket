@@ -59,6 +59,8 @@ export function Game() {
           onPlay={handlePlay}
           disabled={false}
           victoryCombination={victoryCombination}
+          isGameOver={isGameOver}
+          isDraw={isDraw}
         />
 
         <div className="gap-5 flex sm:flex-row flex-col">

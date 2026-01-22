@@ -1,4 +1,5 @@
 import { motion, type Variants } from "motion/react";
+import { GameResultOverlay } from "@/components/game/GameResultOverlay";
 import { Square } from "@/components/game/ui/Square";
 import type { VictoryCombination } from "@/types/Game";
 import { GameSymbolsEnum } from "@/types/Player";
@@ -8,6 +9,8 @@ interface BoardProps {
   onPlay: (index: number) => void;
   disabled?: boolean;
   victoryCombination?: VictoryCombination | null;
+  isGameOver: boolean;
+  isDraw: boolean;
 }
 
 const boardContainerVariants: Variants = {
@@ -40,6 +43,8 @@ export function Board({
   onPlay,
   disabled,
   victoryCombination,
+  isGameOver,
+  isDraw,
 }: BoardProps) {
   const winningSvgLineCoords = victoryCombination?.svgLineCoords;
 
@@ -52,6 +57,8 @@ export function Board({
 
   return (
     <div className="relative h-72 w-72 sm:h-96 sm:w-96">
+      {isGameOver && <GameResultOverlay isDraw={isDraw} />}
+
       <svg
         className="pointer-events-none absolute inset-0 h-full w-full text-slate-300 transition-colors dark:text-slate-700"
         viewBox="0 0 300 300"
@@ -99,7 +106,7 @@ export function Board({
 
       {winningSvgLineCoords && (
         <svg
-          className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+          className="pointer-events-none absolute inset-0 h-full w-full"
           viewBox="0 0 300 300"
         >
           <motion.line
