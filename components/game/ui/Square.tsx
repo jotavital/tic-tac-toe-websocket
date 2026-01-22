@@ -1,6 +1,6 @@
 import { motion, type Variants } from "motion/react";
+import { OIcon, XIcon } from "@/components/game/ui/GameSymbols";
 import { GameSymbolsEnum } from "@/types/Player";
-import { OIcon, XIcon } from "./Icons";
 
 interface SquareProps {
   value: string | null;

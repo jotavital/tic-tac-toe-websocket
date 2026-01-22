@@ -7,7 +7,7 @@ export function MainMenu() {
   const { navigateToScreen } = useGameScreensNavigation();
 
   return (
-    <div className=" flex flex-col items-center gap-12 text-center">
+    <div className="flex flex-col items-center gap-12 text-center">
       <motion.div
         initial="hidden"
         animate="visible"
@@ -34,7 +34,7 @@ export function MainMenu() {
                 transition: { type: "spring", bounce: 0.5 },
               },
             }}
-            className="bg-gradient-to-b from-rose-400 to-rose-600 bg-clip-text text-transparent drop-shadow-[0_4px_0_rgba(225,29,72,0.5)] dark:from-rose-500 dark:to-rose-700"
+            className="bg-linear-to-b from-rose-400 to-rose-600 bg-clip-text text-transparent drop-shadow-[0_4px_0_rgba(225,29,72,0.5)] dark:from-rose-500 dark:to-rose-700"
           >
             TIC
           </motion.span>
@@ -49,7 +49,7 @@ export function MainMenu() {
                 transition: { type: "spring", bounce: 0.5 },
               },
             }}
-            className="bg-gradient-to-b from-emerald-400 to-emerald-600 bg-clip-text text-transparent drop-shadow-[0_4px_0_rgba(16,185,129,0.5)] dark:from-emerald-500 dark:to-emerald-700"
+            className="bg-linear-to-b from-emerald-400 to-emerald-600 bg-clip-text text-transparent drop-shadow-[0_4px_0_rgba(16,185,129,0.5)] dark:from-emerald-500 dark:to-emerald-700"
           >
             TAC
           </motion.span>
@@ -64,7 +64,7 @@ export function MainMenu() {
                 transition: { type: "spring", bounce: 0.5 },
               },
             }}
-            className="bg-gradient-to-b from-cyan-400 to-cyan-600 bg-clip-text text-transparent drop-shadow-[0_4px_0_rgba(6,182,212,0.5)] dark:from-cyan-500 dark:to-cyan-700"
+            className="bg-linear-to-b from-cyan-400 to-cyan-600 bg-clip-text text-transparent drop-shadow-[0_4px_0_rgba(6,182,212,0.5)] dark:from-cyan-500 dark:to-cyan-700"
           >
             TOE
           </motion.span>

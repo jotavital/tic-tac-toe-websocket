@@ -1,13 +1,12 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { useGame } from "@/contexts/GameContext";
 import { cn } from "@/utils/cn";
 
-interface GameResultOverlayProps {
-  isDraw: boolean;
-}
+export function GameResultOverlay() {
+  const { isDraw } = useGame();
 
-export function GameResultOverlay({ isDraw }: GameResultOverlayProps) {
   const text = isDraw ? "VELHA!" : "VITÓRIA!";
 
   const textStyles = isDraw

@@ -1,17 +1,8 @@
 import { motion, type Variants } from "motion/react";
-import { GameResultOverlay } from "@/components/game/GameResultOverlay";
+import { GameResultOverlay } from "@/components/game/ui/GameResultOverlay";
 import { Square } from "@/components/game/ui/Square";
-import type { VictoryCombination } from "@/types/Game";
+import { useGame } from "@/contexts/GameContext";
 import { GameSymbolsEnum } from "@/types/Player";
-
-interface BoardProps {
-  squares: (string | null)[];
-  onPlay: (index: number) => void;
-  disabled?: boolean;
-  victoryCombination?: VictoryCombination | null;
-  isGameOver: boolean;
-  isDraw: boolean;
-}
 
 const boardContainerVariants: Variants = {
   hidden: {},
@@ -38,14 +29,10 @@ const lineVariants: Variants = {
   },
 };
 
-export function Board({
-  squares,
-  onPlay,
-  disabled,
-  victoryCombination,
-  isGameOver,
-  isDraw,
-}: BoardProps) {
+export function Board() {
+  const { squares, isGameOver, victoryCombination, handlePlay } =
+    useGame();
+
   const winningSvgLineCoords = victoryCombination?.svgLineCoords;
 
   const winnerSymbol = victoryCombination
@@ -57,7 +44,7 @@ export function Board({
 
   return (
     <div className="relative h-72 w-72 sm:h-96 sm:w-96">
-      {isGameOver && <GameResultOverlay isDraw={isDraw} />}
+      {isGameOver && <GameResultOverlay />}
 
       <svg
         className="pointer-events-none absolute inset-0 h-full w-full text-slate-300 transition-colors dark:text-slate-700"
@@ -130,8 +117,8 @@ export function Board({
           <div key={i} className="flex items-center justify-center p-2">
             <Square
               value={square}
-              onClick={() => onPlay(i)}
-              disabled={disabled}
+              onClick={() => handlePlay(i)}
+              disabled={isGameOver}
             />
           </div>
         ))}
