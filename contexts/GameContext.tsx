@@ -13,8 +13,8 @@ import { GameSymbolsEnum } from "@/types/Player";
 import { calculateWinner } from "@/utils/game-logic";
 
 interface GameContextData {
-  winner: GameSymbolsEnum | null;
-  squares: (string | null)[];
+  winnerSymbol: GameSymbolsEnum | null;
+  boardState: (string | null)[];
   handlePlay: (index: number) => void;
   isGameOver: boolean;
   isDraw: boolean;
@@ -27,44 +27,45 @@ const GameContext = createContext<GameContextData>({} as GameContextData);
 export function GameProvider({ children }: { children: ReactNode }) {
   const { playMoveSound, playWinSound, playDrawSound } = useGameSounds();
 
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const movesMade = squares.filter(Boolean).length;
-  const xIsNext = movesMade % 2 === 0;
+  const [boardState, setBoardState] = useState(Array(9).fill(null));
+  const countOfMovesMade = boardState.filter(Boolean).length;
+  const xIsNext = countOfMovesMade % 2 === 0;
 
-  const { winner, victoryCombination, isDraw } = calculateWinner(squares);
+  const { winnerSymbol, victoryCombination, isDraw } =
+    calculateWinner(boardState);
 
-  const isGameOver = !!winner || isDraw;
+  const isGameOver = !!winnerSymbol || isDraw;
 
   function handleRestartGame() {
-    setSquares(Array(9).fill(null));
+    setBoardState(Array(9).fill(null));
   }
 
   function handlePlay(i: number) {
     playMoveSound();
 
-    if (squares[i] || winner) {
+    if (boardState[i] || winnerSymbol) {
       return;
     }
 
-    const nextSquares = [...squares];
+    const nextSquares = [...boardState];
     nextSquares[i] = xIsNext ? GameSymbolsEnum.X : GameSymbolsEnum.O;
 
-    setSquares(nextSquares);
+    setBoardState(nextSquares);
   }
 
   useEffect(() => {
-    if (winner) {
+    if (winnerSymbol) {
       playWinSound();
     } else if (isDraw) {
       playDrawSound();
     }
-  }, [winner, isDraw, playDrawSound, playWinSound]);
+  }, [winnerSymbol, isDraw, playDrawSound, playWinSound]);
 
   return (
     <GameContext.Provider
       value={{
-        winner,
-        squares,
+        winnerSymbol,
+        boardState,
         handlePlay,
         isGameOver,
         isDraw,

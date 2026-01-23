@@ -14,20 +14,24 @@ export const VICTORY_COMBINATIONS: VictoryCombination[] = [
   { indices: [2, 4, 6], svgLineCoords: { x1: 280, y1: 20, x2: 20, y2: 280 } },
 ];
 
-export function calculateWinner(squares: GameSymbols[]) {
+export function calculateWinner(boardState: GameSymbols[]) {
   for (const victoryCombination of VICTORY_COMBINATIONS) {
     const [a, b, c] = victoryCombination.indices;
 
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+    if (
+      boardState[a] &&
+      boardState[a] === boardState[b] &&
+      boardState[a] === boardState[c]
+    ) {
       return {
-        winner: squares[a],
+        winnerSymbol: boardState[a],
         victoryCombination: victoryCombination,
         isDraw: false,
       };
     }
   }
 
-  const isDraw = !squares.includes(null);
+  const isDraw = !boardState.includes(null);
 
-  return { winner: null, victoryCombination: null, isDraw };
+  return { winnerSymbol: null, victoryCombination: null, isDraw };
 }

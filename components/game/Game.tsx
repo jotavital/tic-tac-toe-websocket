@@ -5,11 +5,11 @@ import { RestartGameButton } from "@/components/game/ui/buttons/RestartGameButto
 import { useGame } from "@/contexts/GameContext";
 
 export function Game() {
-  const { winner } = useGame();
+  const { winnerSymbol } = useGame();
 
   return (
     <main className="flex min-h-screen w-3xl flex-col justify-center ">
-      {winner && (
+      {winnerSymbol && (
         <ReactConfetti recycle={false} numberOfPieces={800} gravity={0.2} />
       )}
 

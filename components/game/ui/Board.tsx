@@ -10,11 +10,16 @@ import { useGame } from "@/contexts/GameContext";
 import { GameSymbolsEnum } from "@/types/Player";
 
 export function Board() {
-  const { squares, isGameOver, victoryCombination, handlePlay, winner } =
-    useGame();
+  const {
+    boardState,
+    isGameOver,
+    victoryCombination,
+    handlePlay,
+    winnerSymbol,
+  } = useGame();
 
   const winningLineColorClass =
-    winner === GameSymbolsEnum.X ? "text-game-x" : "text-game-o";
+    winnerSymbol === GameSymbolsEnum.X ? "text-game-x" : "text-game-o";
 
   return (
     <div className="relative h-72 w-72 sm:h-96 sm:w-96">
@@ -76,7 +81,7 @@ export function Board() {
       )}
 
       <div className="relative z-10 grid h-full w-full grid-cols-3 grid-rows-3">
-        {squares?.map((square, i) => (
+        {boardState?.map((square, i) => (
           <Square
             key={i}
             value={square}
