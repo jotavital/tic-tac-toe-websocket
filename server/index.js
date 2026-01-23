@@ -9,7 +9,7 @@ const io = new Server(PORT, {
   },
 });
 
-console.log(`Server running on port ${PORT}`);
+console.log(`Servers running on port ${PORT}`);
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
