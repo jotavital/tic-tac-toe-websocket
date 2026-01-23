@@ -3,16 +3,19 @@
 import type { ReactNode } from "react";
 import { GameProvider } from "@/contexts/GameContext";
 import { GameScreensNavigationProvider } from "@/contexts/NavigationContext";
+import { SocketProvider } from "@/contexts/SocketContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <GameProvider>
-        <GameScreensNavigationProvider>
-          {children}
-        </GameScreensNavigationProvider>
-      </GameProvider>
+      <SocketProvider>
+        <GameProvider>
+          <GameScreensNavigationProvider>
+            {children}
+          </GameScreensNavigationProvider>
+        </GameProvider>
+      </SocketProvider>
     </ThemeProvider>
   );
 }
