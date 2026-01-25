@@ -1,63 +1,41 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/game/ui/Button";
 import { ArrowLeftIcon } from "@/components/ui/icons/ArrowLeftIcon";
+import { CheckIcon } from "@/components/ui/icons/CheckIcon";
+import { CopyIcon } from "@/components/ui/icons/CopyIcon";
+import { useGameScreensNavigation } from "@/contexts/NavigationContext";
+import { useSocket } from "@/contexts/SocketContext";
+import { GAME_SCREENS } from "@/types/Game";
 
-function CopyIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-    </svg>
-  );
-}
+export function WaitingRoom() {
+  const { navigateToScreen } = useGameScreensNavigation();
+  const { roomId, emitLeaveRoom } = useSocket();
 
-function CheckIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-}
+  const [codeCopiedToClipboard, setCodeCopiedToClipboard] = useState(false);
 
-interface WaitingRoomProps {
-  code?: string;
-  onCancel?: () => void;
-}
-
-export function WaitingRoom({ code = "----", onCancel }: WaitingRoomProps) {
-  const [copied, setCopied] = useState(false);
+  const handleBackToMainMenu = () => {
+    emitLeaveRoom();
+  };
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
+      await navigator.clipboard.writeText(roomId ?? "");
+      setCodeCopiedToClipboard(true);
 
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCodeCopiedToClipboard(false), 2000);
     } catch (err) {
       console.error("Falha ao copiar:", err);
     }
   };
+
+  useEffect(() => {
+    if (!roomId) {
+      return navigateToScreen(GAME_SCREENS.MAIN_MENU);
+    }
+  }, [roomId, navigateToScreen]);
 
   return (
     <div className="flex flex-col items-center gap-8 text-center w-full">
@@ -80,11 +58,11 @@ export function WaitingRoom({ code = "----", onCancel }: WaitingRoomProps) {
           className="group relative flex items-center justify-center w-full bg-slate-100 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl p-8 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
         >
           <span className="text-5xl md:text-6xl font-black font-mono tracking-[0.2em] text-slate-900 dark:text-white select-all">
-            {code}
+            {roomId}
           </span>
 
           <div className="absolute top-3 right-3 opacity-30 group-hover:opacity-100 transition-opacity">
-            {copied ? (
+            {codeCopiedToClipboard ? (
               <span className="text-green-500 text-xs font-bold flex items-center gap-1 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded">
                 COPIADO <CheckIcon className="w-3 h-3" />
               </span>
@@ -107,7 +85,7 @@ export function WaitingRoom({ code = "----", onCancel }: WaitingRoomProps) {
           variant="secondary"
           size="md"
           icon={<ArrowLeftIcon className="w-5 h-5" />}
-          onClick={onCancel}
+          onClick={handleBackToMainMenu}
           className="mt-4 w-full max-w-50"
         >
           Cancelar

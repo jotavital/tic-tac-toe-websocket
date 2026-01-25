@@ -1,12 +1,21 @@
 "use client";
 
 import type React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { io, type Socket } from "socket.io-client";
 
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
+  roomId: string | null;
+  emitCreateRoom: () => void;
+  emitLeaveRoom: () => void;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -14,6 +23,26 @@ const SocketContext = createContext<SocketContextType | null>(null);
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [roomId, setRoomId] = useState<string | null>(null);
+
+  const emitCreateRoom = useCallback(() => {
+    if (socket) {
+      socket.emit("create_room");
+
+      console.log("Evento 'create_room' emitido ao servidor.");
+    }
+  }, [socket]);
+
+  const emitLeaveRoom = useCallback(() => {
+    if (socket && roomId) {
+      socket.emit("leave_room", roomId);
+
+      console.log(
+        "Evento 'leave_room' emitido ao servidor para a sala:",
+        roomId,
+      );
+    }
+  }, [socket, roomId]);
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
@@ -49,8 +78,31 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("room_created", (id: string) => {
+      console.log("Sala criada recebida com sucesso:", id);
+
+      setRoomId(id);
+    });
+
+    socket.on("room_left", () => {
+      console.log("Saiu da sala com sucesso.");
+
+      setRoomId(null);
+    });
+
+    return () => {
+      socket.off("room_created");
+      socket.off("room_left");
+    };
+  }, [socket]);
+
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider
+      value={{ socket, isConnected, emitCreateRoom, roomId, emitLeaveRoom }}
+    >
       {children}
     </SocketContext.Provider>
   );

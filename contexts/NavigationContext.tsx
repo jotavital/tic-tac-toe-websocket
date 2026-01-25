@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, type ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
 import { GAME_SCREENS, type GameScreen } from "@/types/Game";
 
 interface NavigationContextType {
@@ -21,9 +27,9 @@ export function GameScreensNavigationProvider({
     GAME_SCREENS.MAIN_MENU,
   );
 
-  const navigateToScreen = (screen: GameScreen) => {
+  const navigateToScreen = useCallback((screen: GameScreen) => {
     setCurrentGameScreen(screen);
-  };
+  }, []);
 
   return (
     <GameScreensNavigationContext.Provider
