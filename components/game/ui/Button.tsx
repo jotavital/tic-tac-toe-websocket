@@ -9,7 +9,7 @@ import { cn } from "@/utils/cn";
 interface ButtonProps extends HTMLMotionProps<"button"> {
   children: ReactNode;
   variant?: "primary" | "secondary";
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   icon?: ReactNode;
   sound?: ButtonSoundType;
 }
@@ -40,15 +40,22 @@ export function Button({
     secondary: cn(
       "bg-white border-slate-200 text-slate-600",
       "hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300",
-      "dark:bg-slate-800 dark:border-slate-950 dark:text-slate-400",
-      "dark:hover:bg-slate-700 dark:hover:text-slate-200",
+      "dark:bg-slate-700 dark:border-slate-900 dark:text-slate-200",
+      "dark:hover:bg-slate-600 dark:hover:text-white dark:hover:border-slate-800",
     ),
   };
 
   const sizes = {
-    sm: "px-4 py-2 text-xs border-b-[2px] active:mt-[2px]",
-    md: "px-6 py-3 text-sm border-b-[3px] active:mt-[3px]",
-    lg: "px-8 py-4 text-2xl border-b-[4px] active:mt-[4px]",
+    sm: "px-3 py-1.5 text-xs border-b-[2px] active:mt-[2px] min-h-[32px]",
+    md: "px-6 py-3 text-base border-b-[3px] active:mt-[3px] min-h-[48px]",
+    lg: "px-8 py-4 text-lg border-b-[4px] active:mt-[4px] min-h-[64px]",
+    xl: "px-10 py-5 text-2xl border-b-[4px] active:mt-[4px] min-h-[80px]",
+  };
+
+  const getClickDepth = () => {
+    if (size === "xl" || size === "lg") return 4;
+    if (size === "md") return 3;
+    return 2;
   };
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -66,9 +73,9 @@ export function Button({
       type="button"
       onClick={handleClick}
       whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95, y: size === "lg" ? 4 : size === "md" ? 3 : 2 }}
+      whileTap={{ scale: 0.95, y: getClickDepth() }}
       className={cn(
-        "group relative flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl font-bold uppercase tracking-wider shadow-sm transition-colors",
+        "group relative flex cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl font-bold uppercase tracking-wider shadow-sm transition-colors",
         "active:border-b-0 active:shadow-none",
         variants[variant],
         sizes[size],

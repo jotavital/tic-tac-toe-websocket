@@ -1,17 +1,15 @@
-import type { ComponentProps } from "react";
+import type { IconProps } from "@/types/Icon";
 import { cn } from "@/utils/cn";
 
-interface Props extends ComponentProps<"svg"> {}
-
-export function ArrowLeftIcon({ className, ...props }: Props) {
+export function ArrowLeftIcon({ className, ...props }: IconProps) {
   return (
     <svg
-      className={cn(className)}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2.5}
       aria-hidden="true"
+      className={cn(className)}
       {...props}
     >
       <path
