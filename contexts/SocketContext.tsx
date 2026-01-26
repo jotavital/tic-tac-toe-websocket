@@ -16,6 +16,7 @@ interface SocketContextType {
   roomCode: string | null;
   emitCreateRoom: () => void;
   emitLeaveRoom: () => void;
+  emitJoinRoom: () => void;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -39,6 +40,17 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
       console.log(
         "Evento 'leave_room' emitido ao servidor para a sala:",
+        roomCode,
+      );
+    }
+  }, [socket, roomCode]);
+
+  const emitJoinRoom = useCallback(() => {
+    if (socket && roomCode) {
+      socket.emit("join_room", roomCode);
+
+      console.log(
+        "Evento 'join_room' emitido ao servidor para a sala:",
         roomCode,
       );
     }
@@ -101,7 +113,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <SocketContext.Provider
-      value={{ socket, isConnected, emitCreateRoom, roomCode, emitLeaveRoom }}
+      value={{ socket, isConnected, emitCreateRoom, roomCode, emitLeaveRoom, emitJoinRoom }}
     >
       {children}
     </SocketContext.Provider>

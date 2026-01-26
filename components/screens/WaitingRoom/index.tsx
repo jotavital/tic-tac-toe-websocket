@@ -2,15 +2,15 @@
 
 import { motion } from "motion/react";
 import { useEffect } from "react";
-import { RoomCodeDisplay } from "@/components/game/ui/waiting-room/RoomCodeDisplay";
-import { WaitingOpponentIndicator } from "@/components/game/ui/waiting-room/WaitingOpponentIndicator";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeftIcon } from "@/components/ui/icons/ArrowLeftIcon";
+import { RoomCodeDisplay } from "@/components/screens/WaitingRoom/RoomCodeDisplay";
+import { WaitingOpponentIndicator } from "@/components/screens/WaitingRoom/WaitingOpponentIndicator";
 import { useGameScreensNavigation } from "@/contexts/NavigationContext";
 import { useSocket } from "@/contexts/SocketContext";
 import { GAME_SCREENS } from "@/types/Game";
 
-export function WaitingRoom() {
+export function WaitingRoomScreen() {
   const { navigateToScreen } = useGameScreensNavigation();
   const { roomCode, emitLeaveRoom } = useSocket();
 

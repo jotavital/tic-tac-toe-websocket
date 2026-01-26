@@ -1,6 +1,6 @@
 "use client";
 
-import { ScreensManager } from "@/components/game/ScreensManager";
+import { ScreensManager } from "@/components/screens/ScreensManager";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function Home() {

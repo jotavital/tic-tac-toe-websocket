@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { GameTitle } from "@/components/game/ui/game-title/GameTitle";
+import { GameTitle } from "@/components/screens/MainMenu/GameTitle";
 import { Button } from "@/components/ui/Button";
 import { EnterIcon } from "@/components/ui/icons/EnterIcon";
 import { PlayIcon } from "@/components/ui/icons/PlayIcon";
@@ -7,7 +7,7 @@ import { useGameScreensNavigation } from "@/contexts/NavigationContext";
 import { useSocket } from "@/contexts/SocketContext";
 import { GAME_SCREENS } from "@/types/Game";
 
-export function MainMenu() {
+export function MainMenuScreen() {
   const { navigateToScreen } = useGameScreensNavigation();
   const { emitCreateRoom, roomCode } = useSocket();
 

@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 
-export function GameTitleSubtext() {
+export function TitleSubtext() {
   return (
     <motion.p
       variants={{

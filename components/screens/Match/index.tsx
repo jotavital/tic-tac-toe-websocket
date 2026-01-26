@@ -1,10 +1,10 @@
 import ReactConfetti from "react-confetti";
-import { Board } from "@/components/game/ui/Board";
-import { BackToMainMenuButton } from "@/components/game/ui/buttons/BackToMainMenuButton";
-import { RestartGameButton } from "@/components/game/ui/buttons/RestartGameButton";
+import { Board } from "@/components/screens/Match/Board";
+import { BackToMainMenuButton } from "@/components/screens/Match/buttons/BackToMainMenuButton";
+import { RestartGameButton } from "@/components/screens/Match/buttons/RestartGameButton";
 import { useGame } from "@/contexts/GameContext";
 
-export function Game() {
+export function MatchScreen() {
   const { winnerSymbol } = useGame();
 
   return (

@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
-import { GameResultOverlay } from "@/components/game/ui/GameResultOverlay";
-import { Square } from "@/components/game/ui/Square";
-import { WinningLine } from "@/components/game/ui/WinningLine";
+import { Square } from "@/components/screens/Match/Square";
+import { WinningLine } from "@/components/screens/Match/WinningLine";
+import { GameResultOverlay } from "@/components/screens/Match/GameResultOverlay";
 import {
   BOARD_MOTION_VARIANTS,
   LINE_MOTION_VARIANTS,
