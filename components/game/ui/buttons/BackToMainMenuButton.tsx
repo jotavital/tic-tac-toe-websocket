@@ -1,4 +1,4 @@
-import { Button } from "@/components/game/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { ArrowLeftIcon } from "@/components/ui/icons/ArrowLeftIcon";
 import { useGame } from "@/contexts/GameContext";
 import { useGameScreensNavigation } from "@/contexts/NavigationContext";

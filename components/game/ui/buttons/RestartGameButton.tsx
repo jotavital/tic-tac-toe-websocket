@@ -1,4 +1,4 @@
-import { Button } from "@/components/game/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { RestartIcon } from "@/components/ui/icons/RestartIcon";
 import { useGame } from "@/contexts/GameContext";
 

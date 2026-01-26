@@ -13,7 +13,7 @@ import { io, type Socket } from "socket.io-client";
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
-  roomId: string | null;
+  roomCode: string | null;
   emitCreateRoom: () => void;
   emitLeaveRoom: () => void;
 }
@@ -23,7 +23,7 @@ const SocketContext = createContext<SocketContextType | null>(null);
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [roomId, setRoomId] = useState<string | null>(null);
+  const [roomCode, setRoomCode] = useState<string | null>(null);
 
   const emitCreateRoom = useCallback(() => {
     if (socket) {
@@ -34,15 +34,15 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   }, [socket]);
 
   const emitLeaveRoom = useCallback(() => {
-    if (socket && roomId) {
-      socket.emit("leave_room", roomId);
+    if (socket && roomCode) {
+      socket.emit("leave_room", roomCode);
 
       console.log(
         "Evento 'leave_room' emitido ao servidor para a sala:",
-        roomId,
+        roomCode,
       );
     }
-  }, [socket, roomId]);
+  }, [socket, roomCode]);
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
@@ -84,13 +84,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     socket.on("room_created", (id: string) => {
       console.log("Sala criada recebida com sucesso:", id);
 
-      setRoomId(id);
+      setRoomCode(id);
     });
 
     socket.on("room_left", () => {
       console.log("Saiu da sala com sucesso.");
 
-      setRoomId(null);
+      setRoomCode(null);
     });
 
     return () => {
@@ -101,7 +101,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <SocketContext.Provider
-      value={{ socket, isConnected, emitCreateRoom, roomId, emitLeaveRoom }}
+      value={{ socket, isConnected, emitCreateRoom, roomCode, emitLeaveRoom }}
     >
       {children}
     </SocketContext.Provider>

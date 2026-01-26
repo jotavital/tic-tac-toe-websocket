@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Button } from "@/components/game/ui/Button";
 import { GameTitle } from "@/components/game/ui/game-title/GameTitle";
+import { Button } from "@/components/ui/Button";
 import { EnterIcon } from "@/components/ui/icons/EnterIcon";
 import { PlayIcon } from "@/components/ui/icons/PlayIcon";
 import { useGameScreensNavigation } from "@/contexts/NavigationContext";
@@ -9,17 +9,17 @@ import { GAME_SCREENS } from "@/types/Game";
 
 export function MainMenu() {
   const { navigateToScreen } = useGameScreensNavigation();
-  const { emitCreateRoom, roomId } = useSocket();
+  const { emitCreateRoom, roomCode } = useSocket();
 
   const handleCreateRoom = () => {
     emitCreateRoom();
   };
 
   useEffect(() => {
-    if (roomId) {
+    if (roomCode) {
       navigateToScreen(GAME_SCREENS.WAITING_ROOM);
     }
-  }, [roomId, navigateToScreen]);
+  }, [roomCode, navigateToScreen]);
 
   return (
     <div className="flex flex-col items-center gap-12 text-center w-full">

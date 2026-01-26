@@ -15,23 +15,23 @@ io.on("connection", (socket) => {
   console.log(`Usuário conectado: ${socket.id}`);
 
   socket.on("create_room", () => {
-    let roomId = generateRoomId();
+    let roomCode = generateRoomCode();
 
-    while (io.sockets.adapter.rooms.has(roomId)) {
-      roomId = generateRoomId();
+    while (io.sockets.adapter.rooms.has(roomCode)) {
+      roomCode = generateRoomCode();
     }
 
-    socket.join(roomId);
+    socket.join(roomCode);
 
-    console.log(`Sala criada: ${roomId} pelo socket ${socket.id}`);
+    console.log(`Sala criada: ${roomCode} pelo socket ${socket.id}`);
 
-    socket.emit("room_created", roomId);
+    socket.emit("room_created", roomCode);
   });
 
-  socket.on("leave_room", (roomId) => {
-    socket.leave(roomId);
+  socket.on("leave_room", (roomCode) => {
+    socket.leave(roomCode);
 
-    console.log(`Usuário ${socket.id} saiu da sala ${roomId}`);
+    console.log(`Usuário ${socket.id} saiu da sala ${roomCode}`);
 
     socket.emit("room_left");
   });
@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
   });
 });
 
-function generateRoomId() {
+function generateRoomCode() {
   const code = Math.floor(Math.random() * 10000);
 
   return code.toString().padStart(4, "0");
