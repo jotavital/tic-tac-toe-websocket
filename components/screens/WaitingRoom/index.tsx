@@ -2,17 +2,17 @@
 
 import { motion } from "motion/react";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/Button";
-import { ArrowLeftIcon } from "@/components/ui/icons/ArrowLeftIcon";
 import { RoomCodeDisplay } from "@/components/screens/WaitingRoom/RoomCodeDisplay";
 import { WaitingOpponentIndicator } from "@/components/screens/WaitingRoom/WaitingOpponentIndicator";
+import { Button } from "@/components/ui/Button";
+import { ArrowLeftIcon } from "@/components/ui/icons/ArrowLeftIcon";
 import { useGameScreensNavigation } from "@/contexts/NavigationContext";
 import { useSocket } from "@/contexts/SocketContext";
 import { GAME_SCREENS } from "@/types/Game";
 
 export function WaitingRoomScreen() {
   const { navigateToScreen } = useGameScreensNavigation();
-  const { roomCode, emitLeaveRoom } = useSocket();
+  const { createdRoomCode: roomCode, emitLeaveRoom } = useSocket();
 
   const handleBackToMainMenu = () => {
     emitLeaveRoom();

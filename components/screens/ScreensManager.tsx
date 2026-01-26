@@ -1,3 +1,4 @@
+import { JoinRoomScreen } from "@/components/screens/JoinRoom";
 import { MainMenuScreen } from "@/components/screens/MainMenu";
 import { MatchScreen } from "@/components/screens/Match";
 import { WaitingRoomScreen } from "@/components/screens/WaitingRoom";
@@ -10,8 +11,14 @@ export function ScreensManager() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       {currentGameScreen === GAME_SCREENS.MAIN_MENU && <MainMenuScreen />}
+
       {currentGameScreen === GAME_SCREENS.WAITING_ROOM && <WaitingRoomScreen />}
+
       {currentGameScreen === GAME_SCREENS.GAME && <MatchScreen />}
+
+      {currentGameScreen === GAME_SCREENS.JOIN_ROOM_SCREEN && (
+        <JoinRoomScreen />
+      )}
     </div>
   );
 }

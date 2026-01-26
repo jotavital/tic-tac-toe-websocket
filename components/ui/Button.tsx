@@ -22,6 +22,7 @@ export function Button({
   className,
   onClick,
   sound = "tap",
+  disabled,
   ...props
 }: ButtonProps) {
   const { playTapSound } = useGameSounds();
@@ -59,6 +60,8 @@ export function Button({
   };
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (disabled) return;
+
     const playButtonSound = soundMap[sound];
 
     if (playButtonSound) {
@@ -71,23 +74,31 @@ export function Button({
   return (
     <motion.button
       type="button"
+      disabled={disabled}
       onClick={handleClick}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95, y: getClickDepth() }}
+      whileHover={disabled ? undefined : { scale: 1.05 }}
+      whileTap={disabled ? undefined : { scale: 0.95, y: getClickDepth() }}
       className={cn(
         "group relative flex cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl font-bold uppercase tracking-wider shadow-sm transition-colors",
         "active:border-b-0 active:shadow-none",
         variants[variant],
         sizes[size],
+        "disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none",
+        "disabled:bg-slate-200 disabled:border-slate-300 disabled:text-slate-400",
+        "disabled:hover:bg-slate-200 disabled:hover:border-slate-300",
+        "dark:disabled:bg-slate-800 dark:disabled:border-slate-900 dark:disabled:text-slate-600",
+        "dark:disabled:hover:bg-slate-800 dark:disabled:hover:border-slate-900",
+        "disabled:active:mt-0 disabled:active:border-b-[inherit]",
         className,
       )}
       {...props}
     >
       {icon && (
         <span
-          className={
-            "flex items-center justify-center transition-transform duration-300 group-hover:-translate-x-1"
-          }
+          className={cn(
+            "flex items-center justify-center transition-transform duration-300",
+            !disabled && "group-hover:-translate-x-1",
+          )}
         >
           {icon}
         </span>
@@ -103,7 +114,7 @@ export function Button({
         {children}
       </span>
 
-      {variant === "primary" && (
+      {variant === "primary" && !disabled && (
         <div className="absolute inset-0 z-0 bg-linear-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:animate-shimmer group-hover:opacity-100" />
       )}
     </motion.button>

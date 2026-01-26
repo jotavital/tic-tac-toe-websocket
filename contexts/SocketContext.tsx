@@ -13,10 +13,12 @@ import { io, type Socket } from "socket.io-client";
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
-  roomCode: string | null;
+  createdRoomCode: string | null;
+  joinRoomErrorMessage: string | null;
   emitCreateRoom: () => void;
   emitLeaveRoom: () => void;
-  emitJoinRoom: () => void;
+  emitJoinRoom: (roomCode: string) => void;
+  clearJoinError: () => void;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -24,7 +26,10 @@ const SocketContext = createContext<SocketContextType | null>(null);
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [roomCode, setRoomCode] = useState<string | null>(null);
+  const [createdRoomCode, setCreatedRoomCode] = useState<string | null>(null);
+  const [joinRoomErrorMessage, setJoinRoomErrorMessage] = useState<
+    string | null
+  >(null);
 
   const emitCreateRoom = useCallback(() => {
     if (socket) {
@@ -35,26 +40,35 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   }, [socket]);
 
   const emitLeaveRoom = useCallback(() => {
-    if (socket && roomCode) {
-      socket.emit("leave_room", roomCode);
+    if (socket && createdRoomCode) {
+      socket.emit("leave_room", createdRoomCode);
 
       console.log(
         "Evento 'leave_room' emitido ao servidor para a sala:",
-        roomCode,
+        createdRoomCode,
       );
     }
-  }, [socket, roomCode]);
+  }, [socket, createdRoomCode]);
 
-  const emitJoinRoom = useCallback(() => {
-    if (socket && roomCode) {
-      socket.emit("join_room", roomCode);
+  const emitJoinRoom = useCallback(
+    (roomCode: string) => {
+      setJoinRoomErrorMessage(null);
 
-      console.log(
-        "Evento 'join_room' emitido ao servidor para a sala:",
-        roomCode,
-      );
-    }
-  }, [socket, roomCode]);
+      if (socket && roomCode) {
+        socket.emit("join_room", roomCode);
+
+        console.log(
+          "Evento 'join_room' emitido ao servidor para a sala:",
+          roomCode,
+        );
+      }
+    },
+    [socket],
+  );
+
+  const clearJoinError = useCallback(() => {
+    setJoinRoomErrorMessage(null);
+  }, []);
 
   useEffect(() => {
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
@@ -96,24 +110,51 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     socket.on("room_created", (id: string) => {
       console.log("Sala criada recebida com sucesso:", id);
 
-      setRoomCode(id);
+      setCreatedRoomCode(id);
+    });
+
+    socket.on("room_joined", () => {
+      setJoinRoomErrorMessage(null);
+
+      console.log("Entrou na sala com sucesso.");
+    });
+
+    socket.on("failed_to_join_room", (message: string) => {
+      setJoinRoomErrorMessage(message);
+    });
+
+    socket.on("game_started", () => {
+      // TODO fazer lógica de início de jogo
+      console.log("JOGO COMEÇOU!");
     });
 
     socket.on("room_left", () => {
       console.log("Saiu da sala com sucesso.");
 
-      setRoomCode(null);
+      setCreatedRoomCode(null);
     });
 
     return () => {
       socket.off("room_created");
       socket.off("room_left");
+      socket.off("room_joined");
+      socket.off("failed_to_join_room");
+      socket.off("game_started");
     };
   }, [socket]);
 
   return (
     <SocketContext.Provider
-      value={{ socket, isConnected, emitCreateRoom, roomCode, emitLeaveRoom, emitJoinRoom }}
+      value={{
+        socket,
+        isConnected,
+        joinRoomErrorMessage,
+        emitCreateRoom,
+        createdRoomCode,
+        emitLeaveRoom,
+        emitJoinRoom,
+        clearJoinError,
+      }}
     >
       {children}
     </SocketContext.Provider>

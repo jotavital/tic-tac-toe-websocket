@@ -6,6 +6,7 @@ export type VictoryCombination = {
 export const GAME_SCREENS = {
   MAIN_MENU: "MAIN_MENU",
   WAITING_ROOM: "WAITING_ROOM",
+  JOIN_ROOM_SCREEN: "JOIN_ROOM_SCREEN",
   GAME: "GAME",
 } as const;
 

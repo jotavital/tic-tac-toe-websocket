@@ -28,6 +28,28 @@ io.on("connection", (socket) => {
     socket.emit("room_created", roomCode);
   });
 
+  socket.on("join_room", (roomCode) => {
+    const room = io.sockets.adapter.rooms.get(roomCode);
+
+    if (!room || room.size === 0) {
+      socket.emit("failed_to_join_room", "Sala não encontrada!");
+      return;
+    }
+
+    if (room.size >= 2) {
+      socket.emit("failed_to_join_room", "A sala já está cheia!");
+      return;
+    }
+
+    socket.join(roomCode);
+
+    console.log(`Usuário ${socket.id} entrou na sala ${roomCode}`);
+
+    socket.emit("room_joined");
+
+    io.to(roomCode).emit("game_started");
+  });
+
   socket.on("leave_room", (roomCode) => {
     socket.leave(roomCode);
 

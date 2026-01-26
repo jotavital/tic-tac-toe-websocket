@@ -9,7 +9,7 @@ import { GAME_SCREENS } from "@/types/Game";
 
 export function MainMenuScreen() {
   const { navigateToScreen } = useGameScreensNavigation();
-  const { emitCreateRoom, roomCode } = useSocket();
+  const { emitCreateRoom, createdRoomCode: roomCode } = useSocket();
 
   const handleCreateRoom = () => {
     emitCreateRoom();
@@ -45,7 +45,9 @@ export function MainMenuScreen() {
         <Button
           variant="secondary"
           size="lg"
-          onClick={() => {}}
+          onClick={() => {
+            navigateToScreen(GAME_SCREENS.JOIN_ROOM_SCREEN);
+          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
