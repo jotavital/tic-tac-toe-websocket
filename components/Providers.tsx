@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Toaster } from "sonner";
 import { GameProvider } from "@/contexts/GameContext";
 import { GameScreensNavigationProvider } from "@/contexts/NavigationContext";
 import { SocketProvider } from "@/contexts/SocketContext";
@@ -12,13 +11,11 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <SocketProvider>
+        <GameScreensNavigationProvider>
           <GameProvider>
-            <GameScreensNavigationProvider>
-              {children}
-            </GameScreensNavigationProvider>
+            <SocketProvider>{children}</SocketProvider>
           </GameProvider>
-        </SocketProvider>
+        </GameScreensNavigationProvider>
       </ToastProvider>
     </ThemeProvider>
   );

@@ -45,9 +45,17 @@ io.on("connection", (socket) => {
 
     console.log(`Usuário ${socket.id} entrou na sala ${roomCode}`);
 
-    socket.emit("room_joined");
+    const playerSocketIds = Array.from(room);
 
-    io.to(roomCode).emit("game_started");
+    const initialGameData = {
+      roomCode,
+      players: {
+        [playerSocketIds[0]]: { symbol: "X", shouldPlayFirst: true },
+        [playerSocketIds[1]]: { symbol: "O", shouldPlayFirst: false },
+      },
+    };
+
+    io.to(roomCode).emit("game_started", initialGameData);
   });
 
   socket.on("leave_room", (roomCode) => {

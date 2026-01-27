@@ -20,11 +20,14 @@ interface GameContextData {
   isDraw: boolean;
   victoryCombination: VictoryCombination | null;
   handleRestartGame: () => void;
+  handleSetInitialGameData: (data: any) => void;
 }
 
 const GameContext = createContext<GameContextData>({} as GameContextData);
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
+  const [mySymbol, setMySymbol] = useState<GameSymbolsEnum | null>(null);
   const { playMoveSound, playWinSound, playDrawSound } = useGameSounds();
 
   const [boardState, setBoardState] = useState(Array(9).fill(null));
@@ -36,11 +39,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const isGameOver = !!winnerSymbol || isDraw;
 
-  function handleRestartGame() {
+  const handleRestartGame = () => {
     setBoardState(Array(9).fill(null));
-  }
+  };
 
-  function handlePlay(i: number) {
+  const handleSetInitialGameData = (initialGameData: any) => {
+    setIsMyTurn(initialGameData.shouldPlayFirst);
+    setMySymbol(initialGameData.mySymbol);
+
+    console.log("Initial game data for my user set:", initialGameData);
+  };
+
+  const handlePlay = (i: number) => {
     playMoveSound();
 
     if (boardState[i] || winnerSymbol) {
@@ -51,7 +61,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     nextSquares[i] = xIsNext ? GameSymbolsEnum.X : GameSymbolsEnum.O;
 
     setBoardState(nextSquares);
-  }
+  };
 
   useEffect(() => {
     if (winnerSymbol) {
@@ -71,6 +81,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         isDraw,
         victoryCombination,
         handleRestartGame,
+        handleSetInitialGameData,
       }}
     >
       {children}

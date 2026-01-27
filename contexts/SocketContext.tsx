@@ -9,6 +9,9 @@ import {
   useState,
 } from "react";
 import { io, type Socket } from "socket.io-client";
+import { useGame } from "@/contexts/GameContext";
+import { useGameScreensNavigation } from "@/contexts/NavigationContext";
+import { GAME_SCREENS } from "@/types/Game";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -24,6 +27,9 @@ interface SocketContextType {
 const SocketContext = createContext<SocketContextType | null>(null);
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
+  const { navigateToScreen } = useGameScreensNavigation();
+  const { handleSetInitialGameData } = useGame();
+
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [createdRoomCode, setCreatedRoomCode] = useState<string | null>(null);
@@ -113,19 +119,26 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       setCreatedRoomCode(id);
     });
 
-    socket.on("room_joined", () => {
-      setJoinRoomErrorMessage(null);
-
-      console.log("Entrou na sala com sucesso.");
-    });
-
     socket.on("failed_to_join_room", (message: string) => {
       setJoinRoomErrorMessage(message);
     });
 
-    socket.on("game_started", () => {
-      // TODO fazer lógica de início de jogo
-      console.log("JOGO COMEÇOU!");
+    // TODO tipar
+    socket.on("game_started", (initialGameData) => {
+      setJoinRoomErrorMessage(null);
+
+      console.log("Jogo iniciado com dados:", initialGameData);
+
+      const myInitialData = initialGameData.players[socket.id];
+
+      if (myInitialData) {
+        handleSetInitialGameData({
+          mySymbol: myInitialData.symbol,
+          shouldPlayFirst: myInitialData.shouldPlayFirst,
+        });
+      }
+
+      navigateToScreen(GAME_SCREENS.GAME);
     });
 
     socket.on("room_left", () => {
@@ -137,11 +150,10 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     return () => {
       socket.off("room_created");
       socket.off("room_left");
-      socket.off("room_joined");
       socket.off("failed_to_join_room");
       socket.off("game_started");
     };
-  }, [socket]);
+  }, [socket, navigateToScreen, handleSetInitialGameData]);
 
   return (
     <SocketContext.Provider
