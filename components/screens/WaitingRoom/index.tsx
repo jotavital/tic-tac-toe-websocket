@@ -6,17 +6,15 @@ import { RoomCodeDisplay } from "@/components/screens/WaitingRoom/RoomCodeDispla
 import { WaitingOpponentIndicator } from "@/components/screens/WaitingRoom/WaitingOpponentIndicator";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeftIcon } from "@/components/ui/icons/ArrowLeftIcon";
+import { useGame } from "@/contexts/GameContext";
 import { useGameScreensNavigation } from "@/contexts/NavigationContext";
 import { useSocket } from "@/contexts/SocketContext";
 import { GAME_SCREENS } from "@/types/Game";
 
 export function WaitingRoomScreen() {
   const { navigateToScreen } = useGameScreensNavigation();
-  const { roomCode, emitLeaveRoom } = useSocket();
-
-  const handleBackToMainMenu = () => {
-    emitLeaveRoom();
-  };
+  const { roomCode } = useSocket();
+  const { handleQuitGame } = useGame();
 
   useEffect(() => {
     if (!roomCode) {
@@ -48,7 +46,7 @@ export function WaitingRoomScreen() {
           variant="secondary"
           size="md"
           icon={<ArrowLeftIcon className="w-5 h-5" />}
-          onClick={handleBackToMainMenu}
+          onClick={handleQuitGame}
           className="mt-4 w-full max-w-50"
         >
           Cancelar

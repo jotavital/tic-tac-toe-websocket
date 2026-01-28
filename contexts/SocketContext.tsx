@@ -11,6 +11,8 @@ import {
   useState,
 } from "react";
 import { io, type Socket } from "socket.io-client";
+import { useGameScreensNavigation } from "@/contexts/NavigationContext";
+import { GAME_SCREENS } from "@/types/Game";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -18,7 +20,6 @@ interface SocketContextType {
   roomCode: string | null;
   joinRoomErrorMessage: string | null;
   emitCreateRoom: () => void;
-  emitLeaveRoom: () => void;
   emitJoinRoom: (roomCode: string) => void;
   clearJoinError: () => void;
   setJoinRoomErrorMessage: Dispatch<SetStateAction<string | null>>;
@@ -27,6 +28,8 @@ interface SocketContextType {
 const SocketContext = createContext<SocketContextType | null>(null);
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
+  const { navigateToScreen } = useGameScreensNavigation();
+
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [roomCode, setRoomCode] = useState<string | null>(null);
@@ -41,17 +44,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       console.log("Evento 'create_room' emitido ao servidor.");
     }
   }, [socket]);
-
-  const emitLeaveRoom = useCallback(() => {
-    if (socket && roomCode) {
-      socket.emit("leave_room", roomCode);
-
-      console.log(
-        "Evento 'leave_room' emitido ao servidor para a sala:",
-        roomCode,
-      );
-    }
-  }, [socket, roomCode]);
 
   const emitJoinRoom = useCallback(
     (roomCode: string) => {
@@ -114,6 +106,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       console.log("Sala criada recebida com sucesso:", id);
 
       setRoomCode(id);
+      navigateToScreen(GAME_SCREENS.WAITING_ROOM);
     });
 
     socket.on("room_joined", (id: string) => {
@@ -131,6 +124,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       console.log("Saiu da sala com sucesso.");
 
       setRoomCode(null);
+      setJoinRoomErrorMessage(null);
     });
 
     return () => {
@@ -139,7 +133,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       socket.off("room_joined");
       socket.off("failed_to_join_room");
     };
-  }, [socket]);
+  }, [socket, navigateToScreen]);
 
   return (
     <SocketContext.Provider
@@ -150,7 +144,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         setJoinRoomErrorMessage,
         emitCreateRoom,
         roomCode: roomCode,
-        emitLeaveRoom,
         emitJoinRoom,
         clearJoinError,
       }}

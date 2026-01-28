@@ -25,14 +25,16 @@ interface GameContextData {
   isMyTurn: boolean;
   victoryCombination: VictoryCombination | null;
   mySymbol: string | null;
-  handleRestartGame: () => void;
+  isWaitingToPlayAgain: boolean;
+  handlePlayAgain: () => void;
+  handleQuitGame: () => void;
 }
 
 const GameContext = createContext<GameContextData>({} as GameContextData);
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const { navigateToScreen } = useGameScreensNavigation();
-  const { showSuccessToast, showErrorToast } = useToast();
+  const { showSuccessToast, showErrorToast, showInfoToast } = useToast();
   const { playMoveSound, playWinSound, playDrawSound } = useGameSounds();
   const { socket, setJoinRoomErrorMessage, roomCode } = useSocket();
 
@@ -40,6 +42,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     Array(9).fill(null),
   );
 
+  const [isWaitingToPlayAgain, setIsWaitingToPlayAgain] = useState(false);
   const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
   const [mySymbol, setMySymbol] = useState<string | null>(null);
   const [winnerSymbol, setWinnerSymbol] = useState<string | null>(null);
@@ -58,9 +61,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setHasWon(false);
   }, []);
 
-  const handleRestartGame = () => {
-    resetLocalState();
+  const handlePlayAgain = () => {
+    if (socket && roomCode) {
+      setIsWaitingToPlayAgain(true);
+      socket.emit("play_again", roomCode);
+    }
   };
+
+  const handleQuitGame = useCallback(() => {
+    resetLocalState();
+    navigateToScreen(GAME_SCREENS.MAIN_MENU);
+
+    if (socket && roomCode) {
+      socket.emit("leave_room", roomCode);
+    }
+  }, [navigateToScreen, resetLocalState, roomCode, socket]);
 
   const handlePlay = (index: number) => {
     if (
@@ -91,11 +106,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!socket) return;
 
+    socket.on("waiting_opponent_play_again", () => {
+      showInfoToast("Aguardando o oponente aceitar...");
+    });
+
     socket.on("game_started", (data) => {
+      setIsWaitingToPlayAgain(false);
       setJoinRoomErrorMessage(null);
       resetLocalState();
 
-      const symbol = data.players[String(socket.id)];
+      const playerData = data.players[String(socket.id)];
+      const symbol = playerData?.symbol;
 
       if (!symbol) {
         showErrorToast("Erro ao sincronizar dados do jogador.");
@@ -112,6 +133,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     socket.on("game_state_updated", (data) => {
       setBoardState(data.board);
       setIsMyTurn(data.currentTurn === mySymbol);
+    });
+
+    socket.on("opponent_left", () => {
+      setIsWaitingToPlayAgain(false);
+      resetLocalState();
+      navigateToScreen(GAME_SCREENS.MAIN_MENU);
+
+      showInfoToast("Oponente saiu da partida.");
     });
 
     socket.on("game_over", (data) => {
@@ -137,6 +166,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       socket.off("game_started");
       socket.off("game_state_updated");
       socket.off("game_over");
+      socket.off("opponent_left");
+      socket.off("waiting_opponent_play_again");
     };
   }, [
     socket,
@@ -148,6 +179,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     resetLocalState,
     playWinSound,
     playDrawSound,
+    showInfoToast,
   ]);
 
   return (
@@ -155,6 +187,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       value={{
         winnerSymbol,
         boardState,
+        isWaitingToPlayAgain,
         handlePlay,
         isGameOver,
         hasWon,
@@ -162,7 +195,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         isDraw,
         victoryCombination,
         mySymbol,
-        handleRestartGame,
+        handlePlayAgain,
+        handleQuitGame,
       }}
     >
       {children}
