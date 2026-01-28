@@ -4,7 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { useGameScreensNavigation } from "@/contexts/NavigationContext";
 import { GAME_SCREENS } from "@/types/Game";
 
-export function BackToMainMenuButton() {
+export function QuitGameButton() {
   const { navigateToScreen } = useGameScreensNavigation();
   const { handleRestartGame } = useGame();
 
@@ -18,7 +18,7 @@ export function BackToMainMenuButton() {
       }}
       icon={<ArrowLeftIcon className="h-5 w-5" />}
     >
-      Voltar ao menu
+      Sair do jogo
     </Button>
   );
 }

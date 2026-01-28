@@ -3,6 +3,7 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -13,16 +14,17 @@ import { useToast } from "@/contexts/ToastProvider";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { GAME_SCREENS, type VictoryCombination } from "@/types/Game";
 import { GameSymbolsEnum } from "@/types/Player";
-import { calculateWinner } from "@/utils/game-logic";
 
 interface GameContextData {
-  winnerSymbol: GameSymbolsEnum | null;
+  winnerSymbol: string | null;
   boardState: (string | null)[];
   handlePlay: (index: number) => void;
   isGameOver: boolean;
+  hasWon: boolean;
   isDraw: boolean;
   isMyTurn: boolean;
   victoryCombination: VictoryCombination | null;
+  mySymbol: string | null;
   handleRestartGame: () => void;
 }
 
@@ -34,25 +36,41 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const { playMoveSound, playWinSound, playDrawSound } = useGameSounds();
   const { socket, setJoinRoomErrorMessage, roomCode } = useSocket();
 
-  const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
-  const [mySymbol, setMySymbol] = useState<GameSymbolsEnum | null>(null);
-  const [boardState, setBoardState] = useState(Array(9).fill(null));
+  const [boardState, setBoardState] = useState<(string | null)[]>(
+    Array(9).fill(null),
+  );
 
-  const { winnerSymbol, victoryCombination, isDraw } =
-    calculateWinner(boardState);
+  const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
+  const [mySymbol, setMySymbol] = useState<string | null>(null);
+  const [winnerSymbol, setWinnerSymbol] = useState<string | null>(null);
+  const [isDraw, setIsDraw] = useState<boolean>(false);
+  const [hasWon, setHasWon] = useState(false);
+  const [victoryCombination, setVictoryCombination] =
+    useState<VictoryCombination | null>(null);
 
   const isGameOver = !!winnerSymbol || isDraw;
 
-  const handleRestartGame = () => {
+  const resetLocalState = useCallback(() => {
     setBoardState(Array(9).fill(null));
+    setWinnerSymbol(null);
+    setIsDraw(false);
+    setVictoryCombination(null);
+    setHasWon(false);
+  }, []);
+
+  const handleRestartGame = () => {
+    resetLocalState();
   };
 
   const handlePlay = (index: number) => {
-    if (!mySymbol || !isMyTurn) return;
-
-    playMoveSound();
-
-    if (boardState[index] || winnerSymbol) {
+    if (
+      !socket ||
+      !roomCode ||
+      !mySymbol ||
+      !isMyTurn ||
+      boardState[index] ||
+      isGameOver
+    ) {
       return;
     }
 
@@ -60,55 +78,76 @@ export function GameProvider({ children }: { children: ReactNode }) {
     nextSquares[index] = mySymbol;
 
     setBoardState(nextSquares);
+    setIsMyTurn(false);
 
-    if (socket && roomCode && isMyTurn && !boardState[index] && !winnerSymbol) {
-      socket.emit("make_move", { roomCode, index });
-    }
+    playMoveSound();
+
+    socket.emit("make_move", {
+      roomCode,
+      index,
+    });
   };
-
-  useEffect(() => {
-    if (winnerSymbol) {
-      playWinSound();
-    } else if (isDraw) {
-      playDrawSound();
-    }
-  }, [winnerSymbol, isDraw, playDrawSound, playWinSound]);
 
   useEffect(() => {
     if (!socket) return;
 
-    // TODO tipar
-    socket.on("game_started", (initialGameData) => {
+    socket.on("game_started", (data) => {
       setJoinRoomErrorMessage(null);
+      resetLocalState();
 
-      console.log("Jogo iniciado com dados:", initialGameData);
+      const symbol = data.players[String(socket.id)];
 
-      const myInitialData = initialGameData.players[String(socket.id)];
-
-      if (!myInitialData) {
-        showErrorToast("Erro ao entrar na sala.");
+      if (!symbol) {
+        showErrorToast("Erro ao sincronizar dados do jogador.");
         return;
       }
 
-      setIsMyTurn(myInitialData === GameSymbolsEnum.X);
-      setMySymbol(myInitialData as GameSymbolsEnum);
+      setMySymbol(symbol);
+      setIsMyTurn(symbol === GameSymbolsEnum.X);
 
       navigateToScreen(GAME_SCREENS.GAME);
-
-      showSuccessToast("Jogo iniciado.");
+      showSuccessToast("Partida iniciada!");
     });
 
     socket.on("game_state_updated", (data) => {
       setBoardState(data.board);
       setIsMyTurn(data.currentTurn === mySymbol);
     });
+
+    socket.on("game_over", (data) => {
+      setBoardState(data.board);
+      setWinnerSymbol(data.winnerSymbol);
+      setVictoryCombination(data.victoryCombination);
+      setIsDraw(data.isDraw);
+      setIsMyTurn(false);
+
+      const didIWin =
+        data.winnerSymbol && mySymbol && data.winnerSymbol === mySymbol;
+
+      setHasWon(didIWin);
+
+      if (didIWin) {
+        playWinSound();
+      } else {
+        playDrawSound();
+      }
+    });
+
+    return () => {
+      socket.off("game_started");
+      socket.off("game_state_updated");
+      socket.off("game_over");
+    };
   }, [
     socket,
+    mySymbol,
     navigateToScreen,
     showErrorToast,
     showSuccessToast,
-    mySymbol,
     setJoinRoomErrorMessage,
+    resetLocalState,
+    playWinSound,
+    playDrawSound,
   ]);
 
   return (
@@ -118,9 +157,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         boardState,
         handlePlay,
         isGameOver,
+        hasWon,
         isMyTurn,
         isDraw,
         victoryCombination,
+        mySymbol,
         handleRestartGame,
       }}
     >

@@ -1,7 +1,7 @@
 import ReactConfetti from "react-confetti";
 import { Board } from "@/components/screens/Match/Board";
-import { BackToMainMenuButton } from "@/components/screens/Match/buttons/BackToMainMenuButton";
-import { RestartGameButton } from "@/components/screens/Match/buttons/RestartGameButton";
+import { QuitGameButton } from "@/components/screens/Match/buttons/QuitGameButton";
+import { PlayAgainButton } from "@/components/screens/Match/buttons/PlayAgainButton";
 import { useGame } from "@/contexts/GameContext";
 
 export function MatchScreen() {
@@ -17,9 +17,9 @@ export function MatchScreen() {
         <Board />
 
         <div className="gap-5 flex sm:flex-row flex-col">
-          <BackToMainMenuButton />
+          <QuitGameButton />
 
-          <RestartGameButton />
+          <PlayAgainButton />
         </div>
       </div>
     </main>
