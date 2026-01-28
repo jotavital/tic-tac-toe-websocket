@@ -12,9 +12,9 @@ export function Providers({ children }: { children: ReactNode }) {
     <ThemeProvider>
       <ToastProvider>
         <GameScreensNavigationProvider>
-          <GameProvider>
-            <SocketProvider>{children}</SocketProvider>
-          </GameProvider>
+          <SocketProvider>
+            <GameProvider>{children}</GameProvider>
+          </SocketProvider>
         </GameScreensNavigationProvider>
       </ToastProvider>
     </ThemeProvider>

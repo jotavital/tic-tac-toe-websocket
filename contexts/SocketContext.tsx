@@ -3,36 +3,33 @@
 import type React from "react";
 import {
   createContext,
+  type Dispatch,
+  type SetStateAction,
   useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
 import { io, type Socket } from "socket.io-client";
-import { useGame } from "@/contexts/GameContext";
-import { useGameScreensNavigation } from "@/contexts/NavigationContext";
-import { GAME_SCREENS } from "@/types/Game";
 
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
-  createdRoomCode: string | null;
+  roomCode: string | null;
   joinRoomErrorMessage: string | null;
   emitCreateRoom: () => void;
   emitLeaveRoom: () => void;
   emitJoinRoom: (roomCode: string) => void;
   clearJoinError: () => void;
+  setJoinRoomErrorMessage: Dispatch<SetStateAction<string | null>>;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const { navigateToScreen } = useGameScreensNavigation();
-  const { handleSetInitialGameData } = useGame();
-
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [createdRoomCode, setCreatedRoomCode] = useState<string | null>(null);
+  const [roomCode, setRoomCode] = useState<string | null>(null);
   const [joinRoomErrorMessage, setJoinRoomErrorMessage] = useState<
     string | null
   >(null);
@@ -46,15 +43,15 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   }, [socket]);
 
   const emitLeaveRoom = useCallback(() => {
-    if (socket && createdRoomCode) {
-      socket.emit("leave_room", createdRoomCode);
+    if (socket && roomCode) {
+      socket.emit("leave_room", roomCode);
 
       console.log(
         "Evento 'leave_room' emitido ao servidor para a sala:",
-        createdRoomCode,
+        roomCode,
       );
     }
-  }, [socket, createdRoomCode]);
+  }, [socket, roomCode]);
 
   const emitJoinRoom = useCallback(
     (roomCode: string) => {
@@ -116,44 +113,33 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     socket.on("room_created", (id: string) => {
       console.log("Sala criada recebida com sucesso:", id);
 
-      setCreatedRoomCode(id);
+      setRoomCode(id);
+    });
+
+    socket.on("room_joined", (id: string) => {
+      console.log("Entrou na sala:", id);
+
+      setRoomCode(id);
+      setJoinRoomErrorMessage(null);
     });
 
     socket.on("failed_to_join_room", (message: string) => {
       setJoinRoomErrorMessage(message);
     });
 
-    // TODO tipar
-    socket.on("game_started", (initialGameData) => {
-      setJoinRoomErrorMessage(null);
-
-      console.log("Jogo iniciado com dados:", initialGameData);
-
-      const myInitialData = initialGameData.players[socket.id];
-
-      if (myInitialData) {
-        handleSetInitialGameData({
-          mySymbol: myInitialData.symbol,
-          shouldPlayFirst: myInitialData.shouldPlayFirst,
-        });
-      }
-
-      navigateToScreen(GAME_SCREENS.GAME);
-    });
-
     socket.on("room_left", () => {
       console.log("Saiu da sala com sucesso.");
 
-      setCreatedRoomCode(null);
+      setRoomCode(null);
     });
 
     return () => {
       socket.off("room_created");
       socket.off("room_left");
+      socket.off("room_joined");
       socket.off("failed_to_join_room");
-      socket.off("game_started");
     };
-  }, [socket, navigateToScreen, handleSetInitialGameData]);
+  }, [socket]);
 
   return (
     <SocketContext.Provider
@@ -161,8 +147,9 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         socket,
         isConnected,
         joinRoomErrorMessage,
+        setJoinRoomErrorMessage,
         emitCreateRoom,
-        createdRoomCode,
+        roomCode: roomCode,
         emitLeaveRoom,
         emitJoinRoom,
         clearJoinError,

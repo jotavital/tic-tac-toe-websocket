@@ -7,6 +7,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 type ToastContextType = {
   showErrorToast: (message: string) => void;
+  showSuccessToast: (message: string) => void;
 };
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -18,8 +19,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     toast.error(message);
   }, []);
 
+  const showSuccessToast = useCallback((message: string) => {
+    toast.success(message);
+  }, []);
+
   return (
-    <ToastContext.Provider value={{ showErrorToast }}>
+    <ToastContext.Provider value={{ showErrorToast, showSuccessToast }}>
       {children}
 
       <Toaster position="top-center" richColors theme={theme} closeButton />

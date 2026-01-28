@@ -11,6 +11,8 @@ const io = new Server(PORT, {
 
 console.log(`Servidor rodando na porta ${PORT}`);
 
+const gameStates = {};
+
 io.on("connection", (socket) => {
   console.log(`Usuário conectado: ${socket.id}`);
 
@@ -43,19 +45,50 @@ io.on("connection", (socket) => {
 
     socket.join(roomCode);
 
+    socket.emit("room_joined", roomCode);
+
     console.log(`Usuário ${socket.id} entrou na sala ${roomCode}`);
 
-    const playerSocketIds = Array.from(room);
+    if (room.size === 2) {
+      const playerSocketIds = Array.from(room);
 
-    const initialGameData = {
-      roomCode,
-      players: {
-        [playerSocketIds[0]]: { symbol: "X", shouldPlayFirst: true },
-        [playerSocketIds[1]]: { symbol: "O", shouldPlayFirst: false },
-      },
-    };
+      gameStates[roomCode] = {
+        board: Array(9).fill(null),
+        currentTurn: "X",
+        players: {
+          [playerSocketIds[0]]: "X",
+          [playerSocketIds[1]]: "O",
+        },
+      };
 
-    io.to(roomCode).emit("game_started", initialGameData);
+      io.to(roomCode).emit("game_started", {
+        players: gameStates[roomCode].players,
+      });
+    }
+  });
+
+  socket.on("make_move", ({ roomCode, index }) => {
+    const game = gameStates[roomCode];
+
+    if (!game) return;
+
+    const playerSymbol = game.players[socket.id];
+
+    if (game.currentTurn !== playerSymbol) return;
+
+    if (game.board[index] !== null) return;
+
+    game.board[index] = playerSymbol;
+
+    // 5. Verifica Vitória/Empate (Podemos adicionar depois)
+    // const winner = checkWinner(game.board);
+
+    game.currentTurn = game.currentTurn === "X" ? "O" : "X";
+
+    io.to(roomCode).emit("game_state_updated", {
+      board: game.board,
+      currentTurn: game.currentTurn,
+    });
   });
 
   socket.on("leave_room", (roomCode) => {

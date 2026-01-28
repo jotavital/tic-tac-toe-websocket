@@ -12,7 +12,7 @@ import { GAME_SCREENS } from "@/types/Game";
 
 export function WaitingRoomScreen() {
   const { navigateToScreen } = useGameScreensNavigation();
-  const { createdRoomCode: roomCode, emitLeaveRoom } = useSocket();
+  const { roomCode, emitLeaveRoom } = useSocket();
 
   const handleBackToMainMenu = () => {
     emitLeaveRoom();

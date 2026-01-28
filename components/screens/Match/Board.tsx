@@ -16,6 +16,7 @@ export function Board() {
     victoryCombination,
     handlePlay,
     winnerSymbol,
+    isMyTurn,
   } = useGame();
 
   const winningLineColorClass =
@@ -86,7 +87,7 @@ export function Board() {
             key={i}
             value={square}
             onClick={() => handlePlay(i)}
-            disabled={isGameOver}
+            disabled={isGameOver || !isMyTurn}
           />
         ))}
       </div>

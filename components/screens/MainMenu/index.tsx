@@ -9,7 +9,7 @@ import { GAME_SCREENS } from "@/types/Game";
 
 export function MainMenuScreen() {
   const { navigateToScreen } = useGameScreensNavigation();
-  const { emitCreateRoom, createdRoomCode: roomCode } = useSocket();
+  const { emitCreateRoom, roomCode } = useSocket();
 
   const handleCreateRoom = () => {
     emitCreateRoom();
