@@ -11,6 +11,20 @@ export default function Home() {
       </div>
 
       <ScreensManager />
+
+      <div className="absolute bottom-5 right-5">
+        <p>
+          Developed by{" "}
+          <a
+            href="https://github.com/jotavital"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500"
+          >
+            jotavital
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
