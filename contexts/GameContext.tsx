@@ -28,6 +28,7 @@ interface GameContextData {
   isWaitingToPlayAgain: boolean;
   handlePlayAgain: () => void;
   handleQuitGame: () => void;
+  opponentWantsToPlayAgain: boolean;
 }
 
 const GameContext = createContext<GameContextData>({} as GameContextData);
@@ -42,14 +43,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     Array(9).fill(null),
   );
 
+  const [opponentWantsToPlayAgain, setOpponentWantsToPlayAgain] =
+    useState(false);
+
+  const [victoryCombination, setVictoryCombination] =
+    useState<VictoryCombination | null>(null);
+
   const [isWaitingToPlayAgain, setIsWaitingToPlayAgain] = useState(false);
   const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
   const [mySymbol, setMySymbol] = useState<string | null>(null);
   const [winnerSymbol, setWinnerSymbol] = useState<string | null>(null);
   const [isDraw, setIsDraw] = useState<boolean>(false);
   const [hasWon, setHasWon] = useState(false);
-  const [victoryCombination, setVictoryCombination] =
-    useState<VictoryCombination | null>(null);
 
   const isGameOver = !!winnerSymbol || isDraw;
 
@@ -59,6 +64,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setIsDraw(false);
     setVictoryCombination(null);
     setHasWon(false);
+    setOpponentWantsToPlayAgain(false);
   }, []);
 
   const handlePlayAgain = () => {
@@ -162,12 +168,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    socket.on("opponent_wants_play_again", () => {
+      setOpponentWantsToPlayAgain(true);
+      showInfoToast("Oponente quer jogar novamente!");
+    });
+
     return () => {
       socket.off("game_started");
       socket.off("game_state_updated");
       socket.off("game_over");
       socket.off("opponent_left");
       socket.off("waiting_opponent_play_again");
+      socket.off("opponent_wants_play_again");
     };
   }, [
     socket,
@@ -197,6 +209,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         mySymbol,
         handlePlayAgain,
         handleQuitGame,
+        opponentWantsToPlayAgain,
       }}
     >
       {children}

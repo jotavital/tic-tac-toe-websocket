@@ -1,7 +1,8 @@
 import ReactConfetti from "react-confetti";
 import { Board } from "@/components/screens/Match/Board";
-import { QuitGameButton } from "@/components/screens/Match/buttons/QuitGameButton";
 import { PlayAgainButton } from "@/components/screens/Match/buttons/PlayAgainButton";
+import { QuitGameButton } from "@/components/screens/Match/buttons/QuitGameButton";
+import { RematchModal } from "@/components/screens/Match/RematchModal";
 import { useGame } from "@/contexts/GameContext";
 
 export function MatchScreen() {
@@ -21,6 +22,8 @@ export function MatchScreen() {
 
           <PlayAgainButton />
         </div>
+
+        <RematchModal />
       </div>
     </main>
   );
